@@ -4,8 +4,8 @@
 test whether its premise was *true* instead of tuning it. The premise failed, and I wrote up the
 negative result — including every place my own measurement was wrong and had to be corrected.
 
-*Status: written up in full and ready to publish; the full document and all probes are local until
-my key rotation is done (see "Reproduction").*
+*The full writeup, the frozen pre-registration and every probe that re-derives the numbers below
+are in this repository.*
 
 ## The result, in numbers
 
@@ -77,14 +77,16 @@ is investment advice, and no positive-expectancy strategy is claimed or implied.
 Self-contained Python, paper-only, no credentials required to re-run the analysis:
 
 ```
-python kt_verdict.py        # the pre-registered verdict + clairvoyance bound
-python kt_wallets.py        # the wallet-selection holdout verdict
-python short_ceiling.py     # the short-horizon ceiling; reproduces the published v1 table to the digit
-python data_quality_audit.py, audit_sensitivity.py, robustness_checks.py   # the audit trail
+python rig/kt_verdict.py                # the pre-registered verdict + clairvoyance bound
+python rig/kt_wallets.py                # the wallet-selection holdout verdict
+python tools/short_ceiling.py           # the short-horizon ceiling; reproduces the published v1 table
+python tools/data_quality_audit.py      # plus tools/audit_sensitivity.py, tools/robustness_checks.py
 ```
 
 ## Contact
 
-- GitHub: `<your-handle>` · X: `<your-handle>` · Email: `<you@example.com>`
-- Full writeup, probe scripts and frozen pre-registration available on request (or at `<repo-url>`
-  once the key rotation is complete).
+- **Ivan Zamora-Solano** · GitHub: [ivanzoo3-14](https://github.com/ivanzoo3-14) ·
+  X: [@EvZoo_](https://x.com/EvZoo_) · ivanzoo12@gmail.com
+- The full writeup is at [docs/KILL_TEST_WRITEUP.md](KILL_TEST_WRITEUP.md) and the frozen
+  pre-registration at [rig/PREREGISTRATION_v3.md](../rig/PREREGISTRATION_v3.md). Raw logs
+  available on request.
