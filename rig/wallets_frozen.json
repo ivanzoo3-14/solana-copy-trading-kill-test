@@ -1,0 +1,87 @@
+{
+ "_note": "TIER A for v3.1. Top-20 by OBSERVED BUY COUNT only (never by returns). Frequency-ranked by necessity: websocket capacity is ~20-25 wallets. Tier A alone cannot answer H1 -- it is itself the selection bias v1 identified. Tier B poll rotation over all 4533 (wallets_v3.json) provides unbiased coverage.",
+ "_frozen_at": "2026-10-10T20:48:10.354426+00:00",
+ "_n": 20,
+ "wallets": [
+  {
+   "address": "6eZDCJSLfqDn8wK7quMp5nNg6dnfCZLDETXb4TQyA3Vn",
+   "buy_count": 118
+  },
+  {
+   "address": "71pAfN1nJhcLaezSRYvwdsNFE9PnY9hNfcxB4nZ1gdAp",
+   "buy_count": 99
+  },
+  {
+   "address": "8zkgFGVZrDLieViwqiXFCydSX6WL5hsxmUu55yBdsNsZ",
+   "buy_count": 87
+  },
+  {
+   "address": "HYL7oRkFbZCPAA3JJh4mko3jNafKuecFev57QQwqVH8f",
+   "buy_count": 85
+  },
+  {
+   "address": "6PBDCNWQWSvKvx8wzCae8ELKTGUd2aD4KR8wceguQ2yi",
+   "buy_count": 76
+  },
+  {
+   "address": "13VK7ZrRrx1uZ4Frm2TjacNsbipun21qqifE8wibPVys",
+   "buy_count": 72
+  },
+  {
+   "address": "AVj2oCUSYxFH7aSA4rfphptNCBqWBmtvqjt9aWyeGTgA",
+   "buy_count": 72
+  },
+  {
+   "address": "E4LDQzM6dnztUVYRLRDkxSP2FkGwmBweZwc1VseStJQR",
+   "buy_count": 63
+  },
+  {
+   "address": "5owkcHYYy6ZqJFveoXVvj4cbDSWpXJXkVZpwSdh2FNbq",
+   "buy_count": 55
+  },
+  {
+   "address": "34rTaBgPLXZXuZuP2LjpDdJZKr9NQ2P8iUy4as7fprPG",
+   "buy_count": 55
+  },
+  {
+   "address": "GsJcJ7WbG4nZyJ3QN8Rwt8yXb6ttAstBJES4sWpAcEJJ",
+   "buy_count": 54
+  },
+  {
+   "address": "7AnbNFdMVHENi8ifsx1iC7VeKienXhdzopc9CPC6X12r",
+   "buy_count": 52
+  },
+  {
+   "address": "CfUuTo34xbyc1q9P9BvrNTD3AcipecP6aaQ9RLYA8MAo",
+   "buy_count": 49
+  },
+  {
+   "address": "7xEYYKyqnzTuUhnVVTLFiKwG1inhFtPuBRaGDkb6RxDv",
+   "buy_count": 49
+  },
+  {
+   "address": "HURT3A6JazzLSeCjcjzJWLX7tszJvKDkNrjTA9TWbXnk",
+   "buy_count": 47
+  },
+  {
+   "address": "3m8WaW5Nh47MMbhUwq8Ecs6CapM398U1uR7sox3Vjw1s",
+   "buy_count": 46
+  },
+  {
+   "address": "wN3jfcCSRDmTsF1Ned3Xd8EzcmjH71hBc5dFvk9VKR3",
+   "buy_count": 42
+  },
+  {
+   "address": "2dfne9R5DyHM8a22WGFQdnfP2952FaMx5vm2LLLkLs94",
+   "buy_count": 42
+  },
+  {
+   "address": "69Wn4xNroJBzA6eNK7QJJD6QLAfmJTfYGHEjfin1mre2",
+   "buy_count": 39
+  },
+  {
+   "address": "jPhAfCjpwLjCgYCRMMHRJRvKfuy1YDn6jLEfZkFi4tK",
+   "buy_count": 37
+  }
+ ]
+}

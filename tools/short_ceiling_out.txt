@@ -1,0 +1,185 @@
+==========================================================================================================================
+SHORT-HORIZON PERFECT-EXIT CEILING, net of measured friction   |   source: C:\killtest-rig\logs
+==========================================================================================================================
+signals.jsonl: 8140 signal lines -> 7623 unique ids (517 re-ingest duplicates; fold keeps the last)
+   fp 63b8561732a5c6bc       3831 signal records
+   fp d3753551dc57aa1b       3474 signal records
+   fp 6a9f1ff9c87aeea0        138 signal records
+   fp 2a7f0cfbbce45424        108 signal records
+   fp 224d6bdb82639f44         72 signal records
+
+pools: v1=357  v3.2=640  all-usable=1265
+
+friction actually recorded (round trip = 2*(0.30% fee + measured impact/side) + gas):
+  pool                                             n slip/side med slip/side mean  friction med friction mean  friction p90
+  v1 primary  (fp d3753551, slot lat<=60s)       357         0.40%          1.45%         1.45%         3.54%         6.58%
+                                                     outliers: friction >20% on 13/357, >100% on 0/357 (these wreck the MEAN only; see PART 1b)
+  v3.2        (fp 63b85617, wall lat<=900s)      640         0.34%         54.23%         1.32%       109.11%         3.46%
+                                                     outliers: friction >20% on 9/640, >100% on 7/640 (these wreck the MEAN only; see PART 1b)
+  ALL usable  (any fp, deduped)                 1265         0.38%         31.98%         1.40%        64.60%         4.09%
+                                                     outliers: friction >20% on 33/1265, >100% on 8/1265 (these wreck the MEAN only; see PART 1b)
+
+==========================================================================================================================
+PART 0 -- VERIFICATION. Replays kt_verdict's own fold() + filter chain and compares with the published v1 numbers.
+==========================================================================================================================
+  kt_verdict.fold: 8140 signal ids, dedup dropped 6183, other-fp excluded 1200, primary pool n=357   [published n=357]
+
+   horizon   published  fold-replay    delta    pub %>0  replay %>0
+        30      -2.44%       -2.44%   -0.00pp    31.1%       31.1%  n=357
+        60      -2.56%       -2.56%   +0.00pp    32.8%       32.8%  n=357
+       300      -2.51%       -2.51%   -0.00pp    40.1%       40.1%  n=357
+       900      -4.40%       -4.40%   -0.00pp    37.8%       37.8%  n=357
+      3600     -11.33%      -11.33%   +0.00pp    33.3%       33.3%  n=357
+
+  clairvoyance, all recorded horizons incl. complete.max_price:
+    fold-replay n=357 median +10.17%  >0 70.3%   [published n=357, +10.17%, CI [+7.27,+13.89], 70.3%]
+
+  duplicate-fill convention sensitivity on MY reader (v1 primary pool, n=357):
+   horizon   first-in  last-write   max-fill   spread   [published]
+        30     -2.54%      -2.44%     -2.32%   +0.22pp  [-2.44%, n=357]
+        60     -2.79%      -2.56%     -2.51%   +0.28pp  [-2.56%, n=357]
+       300     -2.56%      -2.51%     -2.51%   +0.05pp  [-2.51%, n=357]
+       900     -4.40%      -4.40%     -3.92%   +0.48pp  [-4.40%, n=357]
+      3600    -11.40%     -11.33%    -10.17%   +1.23pp  [-11.33%, n=357]
+
+==========================================================================================================================
+PART 1 -- HORIZON-SAMPLED CEILING (signals.jsonl). For W=30/60 there is exactly one
+sample inside the window, so the 'ceiling' IS buy-and-hold to W. W=300+ adds samples.
+==========================================================================================================================
+
+v1 primary  (fp d3753551, slot lat<=60s)
+  W=  30s  NET ceiling: n=357   med   -2.32%  mean    -2.95%  p25   -9.53%  p75   +2.63%  >0  31.7%  CI[ -2.92, -1.69]
+            buy&hold-to-W med   -2.44%  mean    -3.43%  | ceiling - hold = +0.12pp median   | worst-5% mean -77.3%
+  W=  60s  NET ceiling: n=357   med   -1.76%  mean    -1.05%  p25   -8.02%  p75   +5.46%  >0  36.7%  CI[ -2.49, -1.02]
+            buy&hold-to-W med   -2.56%  mean    -3.69%  | ceiling - hold = +0.80pp median   | worst-5% mean -75.0%
+  W= 300s  NET ceiling: n=357   med   +0.17%  mean    +7.82%  p25   -5.56%  p75  +12.06%  >0  50.4%  CI[ -0.74, +1.79]
+            buy&hold-to-W med   -2.51%  mean    -1.29%  | ceiling - hold = +2.68pp median   | worst-5% mean -70.1%
+  W= 900s  NET ceiling: n=357   med   +2.13%  mean   +18.78%  p25   -4.01%  p75  +20.91%  >0  58.3%  CI[ +0.48, +5.13]
+            buy&hold-to-W med   -4.40%  mean    -0.24%  | ceiling - hold = +6.53pp median   | worst-5% mean -67.8%
+  W=3600s  NET ceiling: n=357   med   +6.53%  mean   +29.23%  p25   -2.09%  p75  +30.78%  >0  66.1%  CI[ +2.70, +9.98]
+            buy&hold-to-W med  -11.33%  mean    -7.70%  | ceiling - hold = +17.86pp median   | worst-5% mean -66.7%
+
+v3.2        (fp 63b85617, wall lat<=900s)
+  W=  30s  NET ceiling: n=513   med   -1.08%  mean  -114.54%  p25   -5.79%  p75   +3.36%  >0  36.5%  CI[ -1.41, -0.78]
+            buy&hold-to-W med   -1.08%  mean  -114.54%  | ceiling - hold = -0.00pp median   | worst-5% mean -2399.7%
+  W=  60s  NET ceiling: n=513   med   -0.78%  mean  -113.33%  p25   -4.97%  p75   +4.85%  >0  40.0%  CI[ -1.09, -0.61]
+            buy&hold-to-W med   -1.03%  mean  -114.46%  | ceiling - hold = +0.25pp median   | worst-5% mean -2399.3%
+  W= 300s  NET ceiling: n=513   med   -0.27%  mean  -107.92%  p25   -3.60%  p75   +8.09%  >0  47.8%  CI[ -0.62, +0.59]
+            buy&hold-to-W med   -1.45%  mean  -115.03%  | ceiling - hold = +1.17pp median   | worst-5% mean -2399.3%
+  W= 900s  NET ceiling: n=513   med   +1.01%  mean  -104.18%  p25   -2.62%  p75  +13.66%  >0  53.8%  CI[ -0.20, +2.96]
+            buy&hold-to-W med   -2.83%  mean  -119.55%  | ceiling - hold = +3.83pp median   | worst-5% mean -2398.9%
+  W=3600s  NET ceiling: n=513   med   +3.70%  mean   -96.34%  p25   -1.99%  p75  +19.21%  >0  60.4%  CI[ +1.55, +5.56]
+            buy&hold-to-W med   -8.71%  mean  -124.25%  | ceiling - hold = +12.41pp median   | worst-5% mean -2398.9%
+
+ALL usable  (any fp, deduped)
+  W=  30s  NET ceiling: n=1143  med   -1.64%  mean   -62.82%  p25   -8.26%  p75   +2.61%  >0  33.3%  CI[ -2.08, -1.35]
+            buy&hold-to-W med   -1.71%  mean   -63.42%  | ceiling - hold = +0.07pp median   | worst-5% mean -1271.0%
+  W=  60s  NET ceiling: n=1143  med   -1.19%  mean   -61.32%  p25   -7.65%  p75   +4.48%  >0  37.4%  CI[ -1.58, -0.97]
+            buy&hold-to-W med   -1.72%  mean   -63.29%  | ceiling - hold = +0.52pp median   | worst-5% mean -1270.2%
+  W= 300s  NET ceiling: n=1143  med   -0.45%  mean   -54.72%  p25   -5.33%  p75   +9.65%  >0  47.3%  CI[ -0.66, +0.14]
+            buy&hold-to-W med   -2.39%  mean   -62.93%  | ceiling - hold = +1.94pp median   | worst-5% mean -1268.5%
+  W= 900s  NET ceiling: n=1143  med   +1.23%  mean   -43.83%  p25   -3.99%  p75  +16.30%  >0  55.0%  CI[ +0.50, +2.52]
+            buy&hold-to-W med   -3.70%  mean   -60.37%  | ceiling - hold = +4.93pp median   | worst-5% mean -1267.9%
+  W=3600s  NET ceiling: n=1143  med   +4.22%  mean   -27.35%  p25   -3.04%  p75  +23.54%  >0  61.5%  CI[ +2.42, +5.54]
+            buy&hold-to-W med   -9.15%  mean   -57.90%  | ceiling - hold = +13.36pp median   | worst-5% mean -1267.8%
+
+==========================================================================================================================
+PART 1b -- FRICTION-OUTLIER SENSITIVITY. The audit found out-of-range friction_pct
+(up to 9,800%). They are genuine measured impact on an illiquid pool, but they must be
+shown not to be carrying the conclusion. Medians with and without friction > 20%:
+==========================================================================================================================
+
+v1 primary  (fp d3753551, slot lat<=60s)
+  W=  30s  all n=357   med  -2.32%   friction<=20% n=344   med  -2.24%   delta +0.08pp   (excluded 13)
+  W=  60s  all n=357   med  -1.76%   friction<=20% n=344   med  -1.37%   delta +0.39pp   (excluded 13)
+  W= 300s  all n=357   med  +0.17%   friction<=20% n=344   med  +0.26%   delta +0.10pp   (excluded 13)
+  W= 900s  all n=357   med  +2.13%   friction<=20% n=344   med  +2.12%   delta -0.01pp   (excluded 13)
+  W=3600s  all n=357   med  +6.53%   friction<=20% n=344   med  +5.98%   delta -0.55pp   (excluded 13)
+
+v3.2        (fp 63b85617, wall lat<=900s)
+  W=  30s  all n=513   med  -1.08%   friction<=20% n=505   med  -1.02%   delta +0.05pp   (excluded 8)
+  W=  60s  all n=513   med  -0.78%   friction<=20% n=505   med  -0.75%   delta +0.03pp   (excluded 8)
+  W= 300s  all n=513   med  -0.27%   friction<=20% n=505   med  -0.19%   delta +0.08pp   (excluded 8)
+  W= 900s  all n=513   med  +1.01%   friction<=20% n=505   med  +1.12%   delta +0.11pp   (excluded 8)
+  W=3600s  all n=513   med  +3.70%   friction<=20% n=505   med  +4.06%   delta +0.36pp   (excluded 8)
+
+ALL usable  (any fp, deduped)
+  W=  30s  all n=1143  med  -1.64%   friction<=20% n=1111  med  -1.57%   delta +0.06pp   (excluded 32)
+  W=  60s  all n=1143  med  -1.19%   friction<=20% n=1111  med  -1.14%   delta +0.05pp   (excluded 32)
+  W= 300s  all n=1143  med  -0.45%   friction<=20% n=1111  med  -0.33%   delta +0.12pp   (excluded 32)
+  W= 900s  all n=1143  med  +1.23%   friction<=20% n=1111  med  +1.40%   delta +0.17pp   (excluded 32)
+  W=3600s  all n=1143  med  +4.22%   friction<=20% n=1111  med  +4.30%   delta +0.08pp   (excluded 32)
+
+==========================================================================================================================
+PART 2 -- FASTPATH CEILING (first 120 s, nominal 3 s ticks). vs entry = rig convention; basis-adj = measured from first observed sample.
+==========================================================================================================================
+fastpath.jsonl: 51965 samples over 1307 signal ids; joined to signals: 1307/1307
+   fp 63b8561732a5c6bc     fastpath   724 /   3831 (18.9% of that fingerprint's signals)
+   fp d3753551dc57aa1b     fastpath   423 /   3474 (12.2% of that fingerprint's signals)
+   fp 6a9f1ff9c87aeea0     fastpath   101 /    138 (73.2% of that fingerprint's signals)
+   fp 2a7f0cfbbce45424     fastpath    46 /    108 (42.6% of that fingerprint's signals)
+   fp 224d6bdb82639f44     fastpath    13 /     72 (18.1% of that fingerprint's signals)
+
+v1 primary fastpath subset: n=127 paths
+  samples/path med 41   distinct price points/path med 5   median gap 3.00s   | first-sample basis: med -6.06%  mean -6.27%  p10 -78.3%  p90 +39.3%
+  W=  3s  vs entry:      n=127   med   -4.14%  mean    -3.72%  p25  -30.92%  p75   +8.49%  >0  37.0%  CI[-15.35, -0.50]
+           basis-adj:     n=127   med   -0.96%  mean    +2.55%  p25   -1.55%  p75   +1.13%  >0  27.6%  CI[ -1.25, -0.65]
+           hold(adj) med   -3.42% p75   +1.13% p90  +11.48%  | adj ceiling p75   +1.13% p90  +11.48% p95  +17.24% max +61%  | a later sample beats the first by >0.5pp in 33% of paths
+  W= 30s  vs entry:      n=127   med   -4.14%  mean    -3.54%  p25  -30.92%  p75   +8.49%  >0  38.6%  CI[-15.35, -0.22]
+           basis-adj:     n=127   med   -0.86%  mean    +2.73%  p25   -1.55%  p75   +1.44%  >0  29.9%  CI[ -1.20, -0.65]
+           hold(adj) med   -3.92% p75   +1.44% p90  +10.17%  | adj ceiling p75   +1.44% p90  +11.48% p95  +18.83% max +65%  | a later sample beats the first by >0.5pp in 35% of paths
+  W= 60s  vs entry:      n=127   med   -4.14%  mean    -3.05%  p25  -30.92%  p75   +8.49%  >0  40.2%  CI[-14.82, -0.19]
+           basis-adj:     n=127   med   -0.77%  mean    +3.22%  p25   -1.55%  p75   +2.07%  >0  32.3%  CI[ -1.19, -0.65]
+           hold(adj) med   -3.92% p75   +1.38% p90  +10.14%  | adj ceiling p75   +2.07% p90  +12.07% p95  +18.83% max +83%  | a later sample beats the first by >0.5pp in 37% of paths
+  W=120s  vs entry:      n=127   med   -4.14%  mean    -2.65%  p25  -30.92%  p75   +8.49%  >0  41.7%  CI[-14.82, +1.17]
+           basis-adj:     n=127   med   -0.75%  mean    +3.62%  p25   -1.55%  p75   +2.07%  >0  33.1%  CI[ -1.15, -0.65]
+           hold(adj) med   -3.94% p75   +1.02% p90  +12.13%  | adj ceiling p75   +2.07% p90  +15.64% p95  +20.06% max +89%  | a later sample beats the first by >0.5pp in 38% of paths
+  representativeness, v1 primary: net@30s median  sampled-by-fastpath -1.83% (n=56)  vs not-sampled -2.28% (n=400)  -> +0.45pp
+  representativeness, all usable: net@30s median  sampled-by-fastpath -2.56% (n=47)  vs not-sampled -1.71% (n=1160)  -> -0.84pp
+
+all usable fastpath signals: n=603 paths
+  samples/path med 41   distinct price points/path med 4   median gap 3.00s   | first-sample basis: med -3.01%  mean -4.00%  p10 -77.8%  p90 +30.2%
+  W=  3s  vs entry:      n=603   med   -3.62%  mean    -2.03%  p25  -34.63%  p75   +5.07%  >0  33.3%  CI[ -6.06, -1.99]
+           basis-adj:     n=603   med   -0.90%  mean    +1.97%  p25   -1.64%  p75   -0.19%  >0  23.9%  CI[ -1.04, -0.73]
+           hold(adj) med   -2.11% p75   -0.39% p90   +7.18%  | adj ceiling p75   -0.19% p90   +7.18% p95  +17.24% max +204%  | a later sample beats the first by >0.5pp in 28% of paths
+  W= 30s  vs entry:      n=603   med   -3.43%  mean    -1.55%  p25  -34.63%  p75   +6.25%  >0  36.7%  CI[ -5.68, -1.21]
+           basis-adj:     n=603   med   -0.78%  mean    +2.45%  p25   -1.61%  p75   +0.71%  >0  27.7%  CI[ -0.95, -0.65]
+           hold(adj) med   -2.32% p75   +0.18% p90   +7.95%  | adj ceiling p75   +0.71% p90   +8.34% p95  +20.71% max +204%  | a later sample beats the first by >0.5pp in 33% of paths
+  W= 60s  vs entry:      n=603   med   -2.70%  mean    -1.10%  p25  -34.63%  p75   +6.30%  >0  37.6%  CI[ -5.68, -1.07]
+           basis-adj:     n=603   med   -0.73%  mean    +2.90%  p25   -1.58%  p75   +1.13%  >0  29.2%  CI[ -0.90, -0.65]
+           hold(adj) med   -2.49% p75   +0.18% p90   +8.88%  | adj ceiling p75   +1.13% p90   +9.84% p95  +21.32% max +204%  | a later sample beats the first by >0.5pp in 35% of paths
+  W=120s  vs entry:      n=603   med   -2.54%  mean    -0.32%  p25  -33.24%  p75   +7.54%  >0  39.0%  CI[ -5.15, -0.80]
+           basis-adj:     n=603   med   -0.68%  mean    +3.68%  p25   -1.55%  p75   +1.86%  >0  32.0%  CI[ -0.85, -0.65]
+           hold(adj) med   -2.49% p75   +0.42% p90   +8.69%  | adj ceiling p75   +1.86% p90  +12.07% p95  +25.09% max +204%  | a later sample beats the first by >0.5pp in 38% of paths
+  representativeness, v1 primary: net@30s median  sampled-by-fastpath -1.99% (n=52)  vs not-sampled -2.25% (n=404)  -> +0.25pp
+  representativeness, all usable: net@30s median  sampled-by-fastpath -1.45% (n=402)  vs not-sampled -2.01% (n=805)  -> +0.56pp
+
+==========================================================================================================================
+PART 3 -- DOES THE SHORT-WINDOW CEILING CLEAR FRICTION BY A WIDE MARGIN?  (per-signal: max excursion in window - that signal's own friction)
+==========================================================================================================================
+
+  v1 primary fastpath subset
+    W= 30s  gross ceiling: med  +0.00%  mean   +4.61%  | friction: med 1.28%  mean 1.88%  | NET ceiling med  -0.86%  mean   +2.73%  | clears friction in 29.9% of signals
+            at a flat 2.78% round-trip friction: med  -2.78%  mean   +1.83%  clears in 26.0%
+            at a flat 4.60% round-trip friction: med  -4.60%  mean   +0.01%  clears in 22.8%
+    W= 60s  gross ceiling: med  +0.00%  mean   +5.10%  | friction: med 1.28%  mean 1.88%  | NET ceiling med  -0.77%  mean   +3.22%  | clears friction in 32.3% of signals
+            at a flat 2.78% round-trip friction: med  -2.78%  mean   +2.32%  clears in 28.3%
+            at a flat 4.60% round-trip friction: med  -4.60%  mean   +0.50%  clears in 23.6%
+    W=120s  gross ceiling: med  +0.00%  mean   +5.50%  | friction: med 1.28%  mean 1.88%  | NET ceiling med  -0.75%  mean   +3.62%  | clears friction in 33.1% of signals
+            at a flat 2.78% round-trip friction: med  -2.78%  mean   +2.72%  clears in 29.1%
+            at a flat 4.60% round-trip friction: med  -4.60%  mean   +0.90%  clears in 24.4%
+
+  all usable fastpath signals
+    W= 30s  gross ceiling: med  +0.00%  mean   +4.24%  | friction: med 1.26%  mean 1.79%  | NET ceiling med  -0.78%  mean   +2.45%  | clears friction in 27.7% of signals
+            at a flat 2.78% round-trip friction: med  -2.78%  mean   +1.46%  clears in 22.7%
+            at a flat 4.60% round-trip friction: med  -4.60%  mean   -0.36%  clears in 19.1%
+    W= 60s  gross ceiling: med  +0.00%  mean   +4.70%  | friction: med 1.26%  mean 1.79%  | NET ceiling med  -0.73%  mean   +2.90%  | clears friction in 29.2% of signals
+            at a flat 2.78% round-trip friction: med  -2.78%  mean   +1.92%  clears in 24.2%
+            at a flat 4.60% round-trip friction: med  -4.60%  mean   +0.10%  clears in 20.1%
+    W=120s  gross ceiling: med  +0.00%  mean   +5.48%  | friction: med 1.26%  mean 1.79%  | NET ceiling med  -0.68%  mean   +3.68%  | clears friction in 32.0% of signals
+            at a flat 2.78% round-trip friction: med  -2.78%  mean   +2.70%  clears in 26.2%
+            at a flat 4.60% round-trip friction: med  -4.60%  mean   +0.88%  clears in 21.7%
+
+  A ceiling must clear friction by a WIDE margin to be a premise: no causal rule
+  collects the peak, and the rig's own no-information control showed entry timing
+  after detection carries no measurable information (median paired difference 0).

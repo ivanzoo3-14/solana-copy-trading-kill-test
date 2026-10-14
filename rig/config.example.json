@@ -1,0 +1,59 @@
+{
+  "preregistration_version": 4,
+  "note": "Kill-test rig. PAPER ONLY - no keys, no signing, no orders. Do not tune after data starts.",
+  "rpc_url_env": "KILLTEST_RPC_URL",
+  "fallback_rpc_url": "https://api.mainnet-beta.solana.com",
+  "ws_url_env": "KILLTEST_WS_URL",
+  "legion_config_path": "",
+  "_credential_note": "Only the RPC/api-key fields on kt_lib.CRED_ALLOWLIST are read from legion_config_path. Private keys and seed phrases in that file are never read, returned or logged. Env vars override the config.",
+  "wallet_sources": [
+    "wallets_frozen.json"
+  ],
+  "extra_wallets": [],
+  "max_wallets": 350,
+  "detection": {
+    "use_websocket": true,
+    "poll_interval_sec": 220.0,
+    "poll_fallback_enabled": true,
+    "max_rpc_calls_per_day": 40000,
+    "max_signal_latency_sec_for_primary": 60,
+    "max_signal_latency_sec_for_v3": 900,
+    "poll_sig_limit": 25,
+    "_note": "v3.2: poll_interval_sec is set to what the MEASURED RPC burn supports, not to the 60s the v3.1 registration assumed. Measured burn at 130s was ~49,000/day against the 40,000 cap, hence 220s. The registered 60s is arithmetically incompatible with the cap once Tier B actually records the signals its 900s allowance entitles it to -- see PREREGISTRATION_v3.md amendment v3.2, 'The RPC budget'. Historical note: 3s polling burned ~300 RPC/min for no benefit.",
+    "_latency_note": "max_signal_latency_sec_for_primary (60s) is the v1 primary-pool rule and is still read by kt_verdict.py -- deliberately NOT repointed at v3, so the settled v1 verdict cannot be re-litigated. v3 uses max_signal_latency_sec_for_v3 (900s), read by kt_wallets.py.",
+    "max_signal_age_sec": 900
+  },
+  "friction": {
+    "dex_fee_pct_per_side": 0.3,
+    "assumed_gas_lamports_per_tx": 105000,
+    "notional_usd_for_quote": 50.0,
+    "fallback_slippage_pct_per_side": 2.0
+  },
+  "horizons_sec": [
+    30,
+    60,
+    300,
+    900,
+    3600,
+    14400,
+    86400
+  ],
+  "primary_horizon_sec": 300,
+  "min_n_for_verdict": 200,
+  "min_days_before_verdict": 7,
+  "min_buy_usd": 50.0,
+  "quote_mints": {
+    "So11111111111111111111111111111111111111112": "SOL",
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": "USDC",
+    "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB": "USDT"
+  },
+  "poll_rotation_batch": 20,
+  "log_dir": "logs",
+  "_wallet_note": "Top-20 by trade frequency, frozen before results. Selected for websocket stability, not performance.",
+  "_free_rpc_note": "Helius and GetBlock are out of credits. Working free HTTP: Alchemy (rate-limits under load) and api.mainnet-beta.solana.com. The rig probes for a data-returning endpoint and fails over.",
+  "_free_ws_note": "VERIFIED by probe_ws.py: wss://api.mainnet-beta.solana.com delivers logsSubscribe in ~1s. Alchemy/dRPC websockets connect but deliver nothing. PREFERRED_WS puts the working ones first, and a 90s silence watchdog rotates automatically if one goes quiet.",
+  "poll_universe_source": "wallets_v3_poll.json",
+  "_v3_note": "Tier A = wallets_frozen.json via websocket (20). Tier B = wallets_v3_poll.json (300-wallet deterministic random sample of wallets_v3.json's 4533) polled in rotation. Signals are tagged tier A/B. Latency allowance for v3 is <=900s per PREREGISTRATION_v3.md amendment v3.1.",
+  "_v32_note": "AMENDMENT v3.2 (2026-10-10), before examining any v3 holdout data. (1) max_signal_age_sec was 180s, contradicting the registered <=900s v3 allowance; it silently discarded 59% of Tier B while discarding 0% of Tier A, biasing the test toward the frequency-ranked tier. It is now 900s AND fingerprinted (removed from _FP_IGNORE_EXACT) so this can never be pooled over again. (2) Age is now checked from the getSignaturesForAddress blockTime BEFORE spending a getTransaction, so out-of-allowance signatures cost no RPC. (3) poll_sig_limit raised 4 -> 25 (same one RPC call) so active wallets are no longer truncated to their 4 most recent transactions. (4) kt_wallets.py read a hard-coded 60s latency cap -- the v1 rule -- instead of the registered v3 allowance; it now reads max_signal_latency_sec_for_v3 and draws K from Tier B only, reporting the A+B union as a secondary.",
+  "_release_note": "Example config for the public release. Fill in legion_config_path / RPC keys yourself, or run with no credentials against the public RPC."
+}
