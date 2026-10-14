@@ -1,0 +1,16 @@
+config.json
+.env
+pilot_wallet.json
+*wallet*.json
+!wallets_frozen.json
+!wallets_v3_poll.json
+*.key
+*.pem
+logs/
+*.jsonl
+*.log
+*.db
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
